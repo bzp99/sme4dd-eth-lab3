@@ -2,7 +2,7 @@
 services:
 
   besu:
-    image: hyperledger/besu:$BESU_VERSION
+    image: hyperledger/besu:$VERSION_BESU
     # ports:
     #   - name: jsonrpc
     #     target: 8545
