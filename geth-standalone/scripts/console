@@ -1,0 +1,6 @@
+#!/bin/sh -euC
+
+docker run --rm -it \
+    -v ./data/geth.ipc:/tmp/geth.ipc \
+    ethereum/client-go \
+    attach /tmp/geth.ipc
