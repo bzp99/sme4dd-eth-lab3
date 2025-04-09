@@ -1,0 +1,9 @@
+#!/bin/sh -euC
+
+for i in $(seq 4); do
+	>&2 echo "Writing permissions_config.toml for node $i"
+	cat >node$i/data/permissions_config.toml <<EOF
+accounts-allowlist = ["0xfe3b557e8fb62b89f4916b721be55ceb828dbd73", "0x627306090abaB3A6e1400e9345bC60c78a8BEf57"]
+nodes-allowlist = []
+EOF
+done

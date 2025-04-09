@@ -1,0 +1,47 @@
+#!/bin/sh -euC
+
+curl_to_port()
+{
+	port=$1
+	curl -v \
+	    --data @- \
+	    http://127.0.0.1:$port/ \
+	    -H 'Content-Type: application/json'
+}
+
+add_enode_url_to_node()
+{
+	enode_url=$1
+	node_number=$2
+	port=$((8545+$2-1))
+
+	curl_to_port $port <<EOF
+{
+  "jsonrpc": "2.0",
+  "method": "perm_addNodesToAllowlist",
+  "params": [["$enode_url"]],
+  "id": 1
+}
+EOF
+	curl_to_port $port <<EOF
+{
+  "jsonrpc": "2.0",
+  "method": "admin_addPeer",
+  "params": ["$enode_url"],
+  "id": 1
+}
+EOF
+}
+
+
+for i in $(seq 4); do
+	node_ip="$(docker compose exec node$i awk '/^172/{print $1}' /etc/hosts)"
+	enode_url="$(docker compose logs node$i \
+	    | awk '/Enode URL/{print $14}' \
+	    | sed "s/127\.0\.0\.1/$node_ip/")"
+	>&2 echo "Enode URL of node$i is $enode_url"
+	for j in $(seq 4); do
+		>&2 echo "\n\nConnecting node $i to $j"
+		add_enode_url_to_node "$enode_url" $j
+	done
+done

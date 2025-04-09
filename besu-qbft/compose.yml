@@ -13,7 +13,6 @@ services:
       - type: bind
         source: node1/data/
         target: /tmp/besu-data/
-    profiles: [boot]
 
   node2:
     extends:
@@ -27,9 +26,6 @@ services:
       - type: bind
         source: node2/data/
         target: /tmp/besu-data/
-    environment:
-      BESU_BOOTNODES: $BOOTNODE_ENODE_URL
-    profiles: [afterboot]
 
   node3:
     extends:
@@ -43,9 +39,6 @@ services:
       - type: bind
         source: node3/data/
         target: /tmp/besu-data/
-    environment:
-      BESU_BOOTNODES: $BOOTNODE_ENODE_URL
-    profiles: [afterboot]
 
   node4:
     extends:
@@ -59,6 +52,3 @@ services:
       - type: bind
         source: node4/data/
         target: /tmp/besu-data/
-    environment:
-      BESU_BOOTNODES: $BOOTNODE_ENODE_URL
-    profiles: [afterboot]

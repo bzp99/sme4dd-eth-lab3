@@ -1,4 +1,4 @@
-# Private Besu Test Network Running QBFT
+# Private Permissioned Besu Test Network Running QBFT
 
 > [!TIP]
 > Based on the [Create a private network using QBFT](https://besu.hyperledger.org/private-networks/tutorials/qbft) tutorial from the official docs.
@@ -25,29 +25,26 @@ $ ./scripts/copy-configs
 
 This script copies `genesis.json` to the root directory of this test _project_ and copies node keys to their corresponding node data directories (e.g. [`node1/data/`](node1/data/)).
 
-### 4. Start the first node as a bootnode
+### 4. Start nodes
 
 ```console
-$ docker compose --profile boot up -d
-$ docker compose logs node1
+$ docker compose up -d
+```
+You can monitor the results with
+```console
+$ docker compose logs -f
 ```
 
-### 5. Start the other nodes
+### 5. Update the node allowlists at every node
 
-First, you have to copy the boot node’s _Enode URL_ to the `BOOTNODE_ENODE_URL` in `.env`, but **do not forget to change the `127.0.0.1` IP to `node1`!**
-You can automate this using
 ```console
-$ ./scripts/update-enode-url
+$ ./scripts/update-allowlists
 ```
 
-Now start the three other nodes:
-```console
-$ docker compose --profile afterboot up -d
-```
+### 6. Connect peers
 
-Monitor the results:
 ```console
-$ docker compose --profile '*' logs -f
+$ ./scripts/update-peers
 ```
 
 ## Using the network
