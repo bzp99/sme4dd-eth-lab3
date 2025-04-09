@@ -1,0 +1,28 @@
+#!/bin/sh -euC
+
+if [ $(id -u) -eq 0 ]; then
+	asroot=
+elif command -v doas >/dev/null 2>&1; then
+	asroot=doas
+elif command -v sudo >/dev/null 2>&1; then
+	asroot=sudo
+else
+	>&2 echo "Run as root or have privilege escalation (sudo/doas) available"
+	exit 1
+fi
+
+NETWORKFILES_DIR=networkfiles
+
+docker compose --profile '*' down
+
+rm -vf genesis.json
+$asroot rm -vrf "$NETWORKFILES_DIR"/
+mkdir "$NETWORKFILES_DIR/"
+
+for nodeDir in node*/; do
+	rm -vrf ${nodeDir}data/
+	mkdir -vp ${nodeDir}data
+done
+
+>&2 echo 'Removing BOOTNODE_ENODE_URL from .env'
+sed -i '/^BOOTNODE_ENODE_URL/d' .env

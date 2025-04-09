@@ -1,0 +1,26 @@
+---
+services:
+
+  besu:
+    image: hyperledger/besu:$BESU_VERSION
+    # ports:
+    #   - name: jsonrpc
+    #     target: 8545
+    #     published: 8545
+    volumes:
+      - type: bind
+        source: ./genesis.json
+        target: /tmp/genesis.json
+        read_only: true
+    #   - type: bind
+    #     source: node1/data/
+    #     target: /tmp/besu-data/
+    environment:
+      BESU_GENESIS_FILE: /tmp/genesis.json
+      BESU_DATA_PATH: /tmp/besu-data/
+      BESU_RPC_HTTP_ENABLED: true
+      BESU_RPC_HTTP_API: ETH,NET,QBFT
+      BESU_HOST_ALLOWLIST: '*'
+      BESU_RPC_HTTP_CORS_ORIGINS: all
+      BESU_PROFILE: ENTERPRISE
+      BESU_NAT_METHOD: DOCKER

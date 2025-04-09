@@ -1,0 +1,12 @@
+#!/bin/sh -euC
+
+BESU_IMAGE="hyperledger/besu:25.4.0"
+
+docker run --rm -it \
+    -v ./qbft-config.json:/tmp/config.json:ro \
+    -v ./networkfiles:/tmp/networkfiles/ \
+    $BESU_IMAGE \
+    operator generate-blockchain-config \
+    --config-file /tmp/config.json \
+    --to /tmp/networkfiles/ \
+    --private-key-file-name key

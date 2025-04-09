@@ -1,0 +1,12 @@
+#!/bin/sh -euC
+
+NETWORK_FILES_DIR=networkfiles
+
+cp -iv "$NETWORK_FILES_DIR/genesis.json" ./
+
+i=1
+for nodeAddress in "$NETWORK_FILES_DIR/keys"/*/; do
+	>&2 echo "Copying keys for node $i (address: $(basename $nodeAddress))"
+	cp -iv $nodeAddress* node$i/data/
+	i=$((i+1))
+done

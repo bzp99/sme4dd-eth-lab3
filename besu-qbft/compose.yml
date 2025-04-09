@@ -1,0 +1,64 @@
+---
+services:
+
+  node1:
+    extends:
+      file: common.yml
+      service: besu
+    ports:
+      - name: jsonrpc
+        target: 8545
+        published: 8545
+    volumes:
+      - type: bind
+        source: node1/data/
+        target: /tmp/besu-data/
+    profiles: [boot]
+
+  node2:
+    extends:
+      file: common.yml
+      service: besu
+    ports:
+      - name: jsonrpc
+        target: 8545
+        published: 8546
+    volumes:
+      - type: bind
+        source: node2/data/
+        target: /tmp/besu-data/
+    environment:
+      BESU_BOOTNODES: $BOOTNODE_ENODE_URL
+    profiles: [afterboot]
+
+  node3:
+    extends:
+      file: common.yml
+      service: besu
+    ports:
+      - name: jsonrpc
+        target: 8545
+        published: 8547
+    volumes:
+      - type: bind
+        source: node3/data/
+        target: /tmp/besu-data/
+    environment:
+      BESU_BOOTNODES: $BOOTNODE_ENODE_URL
+    profiles: [afterboot]
+
+  node4:
+    extends:
+      file: common.yml
+      service: besu
+    ports:
+      - name: jsonrpc
+        target: 8545
+        published: 8548
+    volumes:
+      - type: bind
+        source: node4/data/
+        target: /tmp/besu-data/
+    environment:
+      BESU_BOOTNODES: $BOOTNODE_ENODE_URL
+    profiles: [afterboot]
