@@ -17,11 +17,11 @@ docker compose --profile '*' down
 
 rm -vf genesis.json
 $asroot rm -vrf "$NETWORKFILES_DIR"/
-mkdir "$NETWORKFILES_DIR/"
 
 for nodeDir in node*/; do
 	rm -vrf ${nodeDir}data/
 	mkdir -vp ${nodeDir}data
+	touch ${nodeDir}data/.gitkeep
 done
 
 >&2 echo 'Removing BOOTNODE_ENODE_URL from .env'
