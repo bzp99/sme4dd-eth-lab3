@@ -1,0 +1,35 @@
+#!/bin/sh -euC
+
+WEB3_RPC_URL=http://localhost:8545
+export WEB3_RPC_URL
+
+web3="${WEB3:-web3}"
+
+pk1=c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3
+addr1=0x627306090abaB3A6e1400e9345bC60c78a8BEf57
+pk2=ae6ae8e5ccbfb04590405997ee2d52d2b330726137b875053c36d94e974d162f
+addr2=f17f52151EbEF6C7334FAD080c5704D77216b732
+
+random_value() { awk 'BEGIN{srand();print(rand())}'; }
+trunc_hex() {
+	case "$1" in
+	0x*)	first_four="${1%"${1#??????}"}";;
+	*)	first_four="${1%"${1#????}"}";;
+	esac
+	last_four="${1#"${1%????}"}"
+	echo "$first_four...$last_four"
+}
+
+next_from=first
+while true; do
+	value="$(random_value)"
+	case "$next_from" in
+	first)	from=$pk1; to=$addr2; next_from=second;;
+	second)	from=$pk2; to=$addr1; next_from=first;;
+	esac
+	echo "Sending transaction $(trunc_hex "$from") (PK) --[$value]--> $(trunc_hex "$to")"
+	$web3 transfer --pk "$from" "$value" to "$to"
+	echo
+
+	sleep 1
+done
