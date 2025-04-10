@@ -23,6 +23,3 @@ for nodeDir in node*/; do
 	mkdir -vp ${nodeDir}data
 	touch ${nodeDir}data/.gitkeep
 done
-
->&2 echo 'Removing BOOTNODE_ENODE_URL from .env'
-sed -i '/^BOOTNODE_ENODE_URL/d' .env

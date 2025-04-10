@@ -52,3 +52,63 @@ services:
       - type: bind
         source: node4/data/
         target: /tmp/besu-data/
+
+
+  mongo:
+    image: mongo:$VERSION_MONGO
+    environment:
+      COMPOSE_HTTP_TIMEOUT: 900
+      DOCKER_CLIENT_TIMEOUT: 900
+    entrypoint: mongod --bind_ip '0.0.0.0'
+    profiles: [explorer]
+
+  redis:
+    image: redis:$VERSION_REDIS
+    restart: unless-stopped
+    profiles: [explorer]
+
+  chainlens-api:
+    image: web3labs/epirus-free-api:$VERSION_EPIRUS_FREE_API
+    environment:
+      NODE_ENDPOINT: http://node1:8545/
+      MONGO_CLIENT_URI: mongodb://mongo:27017
+      REINDEX_ENDPOINT: http://chainlens-ingestion/reindex/
+      MONGO_DB_NAME: $MONGO_DB_NAME
+      MONGO_CREATE_INDICES: true
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on: [redis, mongo]
+    profiles: [explorer]
+
+  chainlens-web:
+    image: web3labs/epirus-free-web:$VERSION_EPIRUS_FREE_WEB
+    environment:
+      API_URL: /api
+      WS_API_URL: ws://node1:8546/
+      DISPLAY_NETWORK_TAB: disabled
+    depends_on: [chainlens-api]
+    profiles: [explorer]
+
+  chainlens-ingestion:
+    image: web3labs/epirus-free-ingestion:$VERSION_EPIRUS_FREE_INGESTION
+    environment:
+      NODE_ENDPOINT: http://node1:8545
+      MONGO_CLIENT_URI: mongodb://mongo:27017
+      MONGO_DB_NAME: $MONGO_DB_NAME
+      LIST_OF_METRICS_TO_CALCULATE_PER_MINUTE: hourly
+    depends_on: [mongo, redis]
+    profiles: [explorer]
+
+  nginx:
+    image: nginx:$VERSION_NGINX
+    volumes:
+      - type: bind
+        source: ./nginx/nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+    ports:
+      - name: http
+        target: 80
+        published: 8080
+    depends_on: [chainlens-api, chainlens-web]
+    profiles: [explorer]
